@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Sorting teams</title>
+  </head>
+  <body>
+    <label>Number of players per team</label>
+    <input id="teamLength" type="number" />
+    <label>Copy any paste the players separated with enters</label>
+    <textarea cols="100" rows="18" id="players"></textarea>
+    <button id="generateBtn">Sort and Order</button>
+    <hr style="border-bottom: 2px solid black; width: 100vw" />
+    <label>Teams</label>
+    <textarea cols="100" rows="20" id="teams"></textarea>
+    <script src="https://cdn.jsdelivr.net/npm/ramda@0.25.0/dist/ramda.min.js"></script>
+
+    <script>
+
+      const shuffler = R.curry(function(random, list) {
+           var idx = -1;
+           var len = list.length;
+           var position;
+           var result = [];
+           while (++idx < len) {
+               position = Math.floor((idx + 1) * random());
+               result[idx] = result[position];
+               result[position] = list[idx];
+           }
+           return result;
+       }),
+      shuffle = shuffler(Math.random);
+
+
+
+      document.querySelector("#generateBtn").addEventListener('click', () => {
+        const players = document.querySelector('#players').value
+        const length = document.querySelector('#teamLength').value
+        const playersArr = players.split('\n')
+        const sorting = R.splitEvery(parseInt(length), shuffle(playersArr));
+
+        let teams = sorting.reduce((memo, playersOnTeam, idx) => {
+          const teamLetter = String.fromCharCode(65 + idx)
+          memo += `*Time ${teamLetter}*\n${playersOnTeam.join('\n')}\n\n\n`;
+          return memo
+        }, '')
+        document.querySelector("#teams").value = teams
+      })
+
+    </script>
+  </body>
+</html>
